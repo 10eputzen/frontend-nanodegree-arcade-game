@@ -1,7 +1,5 @@
 // Enemies our player must avoid
 var Enemy = function() {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
     this.minY = 50;
     this.maxY = 200;
     this.minX = -100;
@@ -14,13 +12,10 @@ var Enemy = function() {
     this.minSpeed = 40;
     this.maxMinSpeed = 80;
     this.maxSpeed = 300;
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
     this.sprite = "images/enemy-bug.png";
 };
 
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
+
 Enemy.prototype.update = function(dt) {
     var location = this.x + (dt * this.speed);
     //Check if Enemy is out of bound
@@ -28,7 +23,7 @@ Enemy.prototype.update = function(dt) {
         this.x = location;
         if (!checkForCollission(this))
             this.render();
-        else
+        else //Reset the Game if there was a collision
             player.resetGame(false);
     } else {
         //Reset Enemy Position
@@ -39,7 +34,7 @@ Enemy.prototype.update = function(dt) {
 
 
 
-
+//Checking if the enemy collides with the player
 function checkForCollission(enemy) {
     if ((Math.abs(enemy.x - player.x) < 75) && (Math.abs(enemy.y - player.y) < 50))
         return true;
@@ -52,13 +47,9 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
 
+//Instead of putting attributes like level and win into the player class, one could have also created an option class, but this was the easiest way :)
 var Player = function(x, y, speed) {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
     this.minY = 0;
     this.maxY = 400;
     this.minX = 0;
@@ -98,6 +89,7 @@ Player.prototype.handleInput = function(keyPress) {
             if (player.y > player.minY)
                 player.y = player.y - player.speed;
             else {
+                //Player reached the Water and beat the level
                 player.resetGame(true);
             }
             break;
@@ -112,7 +104,7 @@ Player.prototype.handleInput = function(keyPress) {
     }
 };
 
-
+//Resets the game and check for Win/Lose
 Player.prototype.resetGame = function(win) {
     if (win) {
         this.level++;
