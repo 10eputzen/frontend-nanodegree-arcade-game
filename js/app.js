@@ -21,7 +21,7 @@ Enemy.prototype.update = function(dt) {
     //Check if Enemy is out of bound
     if (location < this.maxX) {
         this.x = location;
-        if (!checkForCollission(this))
+        if (!this.checkForCollission())
             this.render();
         else //Reset the Game if there was a collision
             player.resetGame(false);
@@ -32,15 +32,13 @@ Enemy.prototype.update = function(dt) {
     }
 };
 
-
-
 //Checking if the enemy collides with the player
-function checkForCollission(enemy) {
-    if ((Math.abs(enemy.x - player.x) < 75) && (Math.abs(enemy.y - player.y) < 50))
+Enemy.prototype.checkForCollission = function() {
+    if ((Math.abs(this.x - player.x) < 75) && (Math.abs(this.y - player.y) < 50))
         return true;
     else
         return false;
-}
+};
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
@@ -50,21 +48,19 @@ Enemy.prototype.render = function() {
 
 //Instead of putting attributes like level and win into the player class, one could have also created an option class, but this was the easiest way :)
 var Player = function(x, y, speed) {
+    this.x = x;
+    this.y = y;
+    this.speed = speed;
+
     this.minY = 0;
     this.maxY = 400;
     this.minX = 0;
     this.maxX = 400;
-    this.speed = speed;
-
-    this.x = x;
-    this.y = y;
-
     this.level = 1;
     this.points = 0;
     this.reset = false;
     this.win = false;
     this.hearts = 3;
-
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
@@ -82,24 +78,24 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(keyPress) {
     switch (keyPress) {
         case "left":
-            if (player.x > player.minX)
-                player.x = player.x - player.speed;
+            if (this.x > this.minX)
+                this.x = this.x - this.speed;
             break;
         case "up":
-            if (player.y > player.minY)
-                player.y = player.y - player.speed;
+            if (this.y > this.minY)
+                this.y = this.y - this.speed;
             else {
                 //Player reached the Water and beat the level
-                player.resetGame(true);
+                this.resetGame(true);
             }
             break;
         case "right":
-            if (player.x < player.maxX)
-                player.x = player.x + player.speed;
+            if (this.x < this.maxX)
+                this.x = this.x + this.speed;
             break;
         case "down":
-            if (player.y < player.maxY)
-                player.y = player.y + player.speed;
+            if (this.y < this.maxY)
+                this.y = this.y + this.speed;
             break;
     }
 };
@@ -117,9 +113,15 @@ Player.prototype.resetGame = function(win) {
         }
         if (this.hearts >= 0)
             this.hearts--;
+
         if (this.hearts < 0) {
-            //Reset the whole character
-            player = new Player(200, 400, 25);
+            //Reset the whole Character
+            this.x = 200;
+            this.y = 400;
+            this.speed = 25;
+            this.hearts = 3;
+            this.points = 0;
+            this.level = 1;
         }
     }
     this.reset = true;
@@ -134,11 +136,8 @@ Player.prototype.getLevel = function() {
     return this.level;
 };
 
-
-
-//Enemies are been added from the initial reset() in the engine.js
-var player = new Player(200, 400, 25);
-
+//Creating the Character
+player = new Player(200, 400, 25);
 
 //Create new enemy with individual min and max Speed, depending on the level
 function generateEnemy(level) {
